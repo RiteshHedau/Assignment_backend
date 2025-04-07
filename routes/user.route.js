@@ -25,7 +25,7 @@ router.get("/logout",authMiddleware.authUser,userController.logoutUser)
 router.get("/refresh-token",userController.refreshAccessToken)
 
 router.post("/update-user",upload.single("profilePic"),
-    authMiddleware.authUser,isAdminMiddleware.isAdmin,
+    authMiddleware.authUser,
     userController.updateUser)
 
 
