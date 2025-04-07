@@ -27,4 +27,4 @@ jobs:
       - name: Delete old container
         run: docker rm -f assignment-server-container
       - name: Run Docker container
-        run: docker run -d -p 4000:4000 --name assignment-server-container -e MONGO_URI='${{secrets.MONGO_URI}}' riteshhedau/assignment-server
+        run: docker run -d -p 4000:4000 --name assignment-server-container -e DB_USERNAME='${{ secrets.DB_USERNAME }} DB_PASSWORD='${{ secrets.DB_PASSWORD }}'' DB_NAME='${{ secrets.DB_NAME }}' DB_HOST='${{ secrets.DB_HOST }}' riteshhedau/assignment-server
