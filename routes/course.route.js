@@ -32,4 +32,16 @@ router.get("/get-courses-based-on-query",authMiddleware.authUser,courseControlle
 
 router.get("/get-all-courses-title",authMiddleware.authUser,courseController.getAllCoursesTitle)
 
+router.get("/delete-course/:id",authMiddleware.authUser,isAdminMiddleware.isAdmin,courseController.deleteCourse)
+
+router.put("/update-course/:id",upload.single("thumbnailUrl"),[
+    body("title").notEmpty().withMessage("Title is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("duration").notEmpty().withMessage("Duration is required"),
+    body("price").notEmpty().withMessage("Price is required"),
+    body("level").notEmpty().withMessage("Level is required"),
+],authMiddleware.authUser,isAdminMiddleware.isAdmin,courseController.updateCourse)
+
+
+
 module.exports=router;

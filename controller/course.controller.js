@@ -124,10 +124,65 @@ const getAllCoursesTitle = async (req, res) => {
   }
 }
 
+const deleteCourse = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const course = await Course.findByPk(courseId);
+
+    if (!course) {
+      return res.status(404).json(new ApiResponse(404, null, "Course not found"));
+    }
+
+    await course.destroy();
+
+    return res.status(200).json(new ApiResponse(200, null, "Course deleted successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message);
+  }
+};
+
+const updateCourse = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const { title, description, level, language, duration, price, author, category } = req.body;
+    const thumbnailLocalPath = req.file?.path;
+
+    const course = await Course.findByPk(courseId);
+
+    if (!course) {
+      return res.status(404).json(new ApiResponse(404, null, "Course not found"));
+    }
+
+    let thumbnailUrl = course.thumbnailUrl;
+    if (thumbnailLocalPath) {
+      const uploadResponse = await uploadOnCloudinary(thumbnailLocalPath);
+      thumbnailUrl = uploadResponse.url;
+    }
+
+    await course.update({
+      title,
+      description,
+      level,
+      language,
+      duration,
+      price,
+      author,
+      category,
+      thumbnailUrl,
+    });
+
+    return res.status(200).json(new ApiResponse(200, course, "Course updated successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message);
+  }
+};
+
 module.exports = {
   createCourse,
   getAllCourses,
   createAllCourses,
   getAllCoursesBasedOnQuery,
-  getAllCoursesTitle
+  getAllCoursesTitle,
+  deleteCourse,
+  updateCourse
 };
