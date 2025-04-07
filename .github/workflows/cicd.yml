@@ -23,7 +23,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
-        run: docker pull riteshhedau/assignment-serverserver:latest
+        run: docker pull riteshhedau/assignment-server:latest
       - name: Delete old container
         run: docker rm -f assignment-server-container
       - name: Run Docker container
