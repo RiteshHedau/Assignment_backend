@@ -6,11 +6,11 @@ require("dotenv").config();
 //const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname') //
 
 const sequelize = new Sequelize(
-  assignment,
-  admin,
-  ritesh123,
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
   {
-    host: assignment.cbskc0sm81a4.ap-south-1.rds.amazonaws.com,
+    host: process.env.DB_HOST,
     dialect: "mysql",
   }
 );
