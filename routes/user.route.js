@@ -31,7 +31,7 @@ router.post("/update-user",upload.single("profilePic"),
 
 router.post("forget-paassword",authMiddleware.authUser,userController.forgetPassword)
 
-router.get("/get-all-users",authMiddleware.authUser,isAdminMiddleware.isAdmin,userController.getAllUsers)
+router.get("/get-all-users",authMiddleware.authUser,userController.getAllUsers)
 
 router.get("/get-logged-user",authMiddleware.authUser,userController.getUser)
 
