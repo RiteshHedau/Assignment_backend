@@ -27,8 +27,8 @@ jobs:
       - name: Delete old container
         run: docker rm -f assignment-server-container
       - name: Run Docker container
-        run: |
-        docker run -d \
+          run: |
+          docker run -d \
           --name assignment-server-container \
           --add-host=host.docker.internal:host-gateway \
           -p 4000:4000 \
