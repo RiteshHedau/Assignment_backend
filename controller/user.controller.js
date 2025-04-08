@@ -8,21 +8,21 @@ const { sendEmail } = require("./../utils/sendEmail.js");
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
-    // ✅ Sequelize equivalent of findById
+   
     const user = await User.findByPk(userId);
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    // ✅ Use instance methods we defined earlier
+   
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
-    // ✅ Update refresh token
+    
     user.refreshToken = refreshToken;
 
-    // ✅ Save changes (Sequelize doesn't need validateBeforeSave: false)
+    
     await user.save();
 
     return { accessToken, refreshToken };
@@ -39,12 +39,12 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password,role } = req.body;
 
-    // 🧪 Basic validation
+   
     if ([name, email, password].some((field) => !field?.trim())) {
       throw new ApiError(400, "All fields are required");
     }
 
-    // 🔍 Check if user already exists by email only
+   
     const existedUser = await User.findOne({
       where: { email },
     });
@@ -53,7 +53,7 @@ const registerUser = async (req, res) => {
       throw new ApiError(409, "User with this email already exists");
     }
 
-    // ✅ Create user
+   
     const user = await User.create({
       name,
       email,
@@ -61,7 +61,7 @@ const registerUser = async (req, res) => {
       role
     });
 
-    // 🧼 Clean response
+   
     const userResponse = {
       id: user.id,
       name: user.name,
@@ -89,7 +89,7 @@ const loginUser = async (req, res) => {
       throw new ApiError(400, "Email and password are required");
     }
 
-    // 🔍 Find user by email
+ 
     const user = await User.findOne({
       where: sequelize.where(
         sequelize.fn("lower", sequelize.col("email")),
@@ -101,23 +101,23 @@ const loginUser = async (req, res) => {
       throw new ApiError(404, "User does not exist");
     }
 
-    // 🔒 Compare password
+    
     const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
       throw new ApiError(401, "Invalid email or password");
     }
 
-    // 🔑 Generate tokens
+   
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
       user.id
     );
 
-    // 📝 Store refreshToken in DB
+   
     user.refreshToken = refreshToken;
     await user.save({ validate: false });
 
-    // 🧹 Clean user data
+   
     const userResponse = {
       id: user.id,
       name: user.name,
@@ -127,10 +127,10 @@ const loginUser = async (req, res) => {
       createdAt: user.created_at,
     };
 
-    // 🍪 Set cookies
+  
     const options = {
       httpOnly: true,
-      secure: true, // set to true in production
+      secure: true, 
       //sameSite: "Strict",
     };
 
@@ -160,7 +160,7 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   try {
-    // Get user ID from the authenticated request
+    
     const userId = req.user.id;
 
     // Find the user
@@ -170,14 +170,14 @@ const logoutUser = async (req, res) => {
       throw new ApiError(404, "User not found");
     }
 
-    // Unset the refreshToken field (set to null)
+    // refreshToken field (set to null)
     user.refreshToken = null;
     await user.save({ validate: false });
 
-    // Clear cookies
+    
     const options = {
       httpOnly: true,
-      secure: true, // enable in production
+      secure: true, 
     };
 
     return res
@@ -205,7 +205,7 @@ const refreshAccessToken = async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user = await User.findByPk(decodedToken?.id); // ✅ Sequelize version
+    const user = await User.findByPk(decodedToken?.id); 
 
     if (!user) {
       throw new ApiError(401, "Invalid refresh token");
@@ -217,14 +217,13 @@ const refreshAccessToken = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true, // Set to true in production
+      secure: true,
     };
 
-    // 🔄 Generate new tokens
+   
     const accessToken = user.generateAccessToken();
     const newRefreshToken = user.generateRefreshToken();
 
-    // 💾 Save new refreshToken in DB
     user.refreshToken = newRefreshToken;
     await user.save({ validate: false });
 
@@ -247,7 +246,7 @@ const refreshAccessToken = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { name, email, role } = req.body;
-    const userId = req.user.id; // Get user ID from the authenticated request
+    const userId = req.user.id; 
 
     console.log("file you will get", req.file);
 
@@ -259,22 +258,22 @@ const updateUser = async (req, res) => {
       profilePicUrl = uploadResponse.url;
     }
 
-    // 🔍 Find user by ID
+  
     const user = await User.findByPk(userId);
 
     if (!user) {
       throw new ApiError(404, "User not found");
     }
 
-    // Update user details
+    
     user.name = name;
     user.email = email;
-    user.profilePic = profilePicUrl || user.profilePic; // Update if new URL is available
+    user.profilePic = profilePicUrl || user.profilePic; 
     user.role = role;
 
     await user.save({ validate: false });
 
-    // 🧼 Clean response
+  
     const userResponse = {
       id: user.id,
       name: user.name,
@@ -309,22 +308,22 @@ const forgetPassword = async (req, res) => {
       throw new ApiError(404, "User not found with this email");
     }
 
-    // Create a reset token (JWT or random string)
+
     const resetToken = jwt.sign(
       { id: user.id },
       process.env.FORGOT_PASSWORD_SECRET,
       { expiresIn: "15m" }
     );
 
-    // Optional: Save token & expiry in DB
+    
     user.passwordResetToken = resetToken;
 
     await user.save();
 
-    // Create reset link
+  
     const resetURL = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-    // Send email (assuming you have sendEmail util)
+    
     await sendEmail({
       to: user.email,
       subject: "Password Reset Request",
@@ -357,7 +356,7 @@ const getAllUsers=async(req,res)=>{
 
 const getUser=async(req,res)=>{
   try {
-      // Assuming you're passing the user ID in the URL
+      
       
       const user = await User.findByPk(req.user.id, {
           attributes: ['id', 'name', 'email', 'profilePic', 'role', 'created_at'],

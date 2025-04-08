@@ -1,9 +1,6 @@
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
-// Option 1: Passing a connection URI
-//const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
-//const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname') //
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,

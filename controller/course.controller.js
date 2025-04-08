@@ -1,16 +1,25 @@
-const Course = require('./../models/course.model');
+const Course = require("./../models/course.model");
 const ApiError = require("../utils/ApiError");
 const ApiResponse = require("./../utils/ApiResponse");
-const uploadOnCloudinary = require( "../utils/cloudinary.js");
+const uploadOnCloudinary = require("../utils/cloudinary.js");
 const { Op } = require("sequelize");
-
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, level, language, duration, price, author, category, type } = req.body;
+    const {
+      title,
+      description,
+      level,
+      language,
+      duration,
+      price,
+      author,
+      category,
+      type,
+    } = req.body;
     const thumbnailLocalPath = req.file?.path;
 
-    let thumbnailUrl = '';
+    let thumbnailUrl = "";
     if (thumbnailLocalPath) {
       const uploadResponse = await uploadOnCloudinary(thumbnailLocalPath);
       thumbnailUrl = uploadResponse.url;
@@ -29,60 +38,66 @@ const createCourse = async (req, res) => {
       thumbnailUrl,
     });
 
-    return res.status(201).json(new ApiResponse(201,{newCourse},
-      'Course created successfully',
-      
-    ));
+    return res
+      .status(201)
+      .json(new ApiResponse(201, { newCourse }, "Course created successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
 };
 
 const getAllCourses = async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 3;
-      const offset = (page - 1) * limit; // cleaner calculation
-  
-      const total = await Course.count();
-  
-      // Avoid unnecessary DB hit if page is out of range
-      if (offset >= total && total !== 0) {
-        return res.status(400).json(
-          new ApiResponse(400, [], "Requested page exceeds total pages")
-        );
-      }
-  
-      const courses = await Course.findAll({
-        limit,
-        offset,
-        order: [['created_at', 'DESC']] // optional: sort by newest first
-      });
-  
-      const baseUrl = `${req.protocol}://${req.get('host')}${req.path}`;
-      const totalPages = Math.ceil(total / limit);
-  
-      const pagination = {
-        total,
-        page,
-        limit,
-        totalPages,
-        nextPage: page < totalPages ? `${baseUrl}?page=${page + 1}&limit=${limit}` : null,
-        prevPage: page > 1 ? `${baseUrl}?page=${page - 1}&limit=${limit}` : null,
-      };
-  
-      return res.status(200).json(
-        new ApiResponse(200, { courses, pagination }, "Courses fetched successfully")
-      );
-    } catch (error) {
-      throw new ApiError(500, error.message);
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const offset = (page - 1) * limit; // cleaner calculation
+
+    const total = await Course.count();
+
+    // Avoid unnecessary DB hit if page is out of range
+    if (offset >= total && total !== 0) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, [], "Requested page exceeds total pages"));
     }
-  };
-  
+
+    const courses = await Course.findAll({
+      limit,
+      offset,
+      order: [["created_at", "DESC"]], // optional: sort by newest first
+    });
+
+    const baseUrl = `${req.protocol}://${req.get("host")}${req.path}`;
+    const totalPages = Math.ceil(total / limit);
+
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages,
+      nextPage:
+        page < totalPages ? `${baseUrl}?page=${page + 1}&limit=${limit}` : null,
+      prevPage: page > 1 ? `${baseUrl}?page=${page - 1}&limit=${limit}` : null,
+    };
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { courses, pagination },
+          "Courses fetched successfully"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(500, error.message);
+  }
+};
+
 const getAllCoursesBasedOnQuery = async (req, res) => {
   try {
     const { title, level } = req.query;
-    console.log("title",title);
+    console.log("title", title);
     const whereClause = {};
 
     if (title) {
@@ -95,17 +110,36 @@ const getAllCoursesBasedOnQuery = async (req, res) => {
 
     const courses = await Course.findAll({ where: whereClause });
 
-    return res.status(200).json(new ApiResponse(200, courses, "Courses fetched successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, courses, "Courses fetched successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
-}
+};
 
 const createAllCourses = async (req, res) => {
   try {
-    const courses = await Course.bulkCreate(req.body);
+    const coursesData = JSON.parse(req.body.courses);
+    const thumbnailFiles = req.files;
 
-    return res.status(201).json(new ApiResponse(201, courses, "Courses created successfully"));
+    const uploadPromises = thumbnailFiles.map((file) =>
+      uploadOnCloudinary(file.path)
+    );
+    const uploadedUrls = await Promise.all(uploadPromises);
+
+    const courses = await Promise.all(
+      coursesData.map(async (course, index) => {
+        return await Course.create({
+          ...course,
+          thumbnailUrl: uploadedUrls[index]?.url || "",
+        });
+      })
+    );
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, courses, "Courses created successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
@@ -114,15 +148,17 @@ const createAllCourses = async (req, res) => {
 const getAllCoursesTitle = async (req, res) => {
   try {
     const courses = await Course.findAll({
-      attributes: ['title'],
+      attributes: ["title"],
       raw: true,
     });
 
-    return res.status(200).json(new ApiResponse(200, courses, "Courses fetched successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, courses, "Courses fetched successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
-}
+};
 
 const deleteCourse = async (req, res) => {
   try {
@@ -130,12 +166,16 @@ const deleteCourse = async (req, res) => {
     const course = await Course.findByPk(courseId);
 
     if (!course) {
-      return res.status(404).json(new ApiResponse(404, null, "Course not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Course not found"));
     }
 
     await course.destroy();
 
-    return res.status(200).json(new ApiResponse(200, null, "Course deleted successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, course, "Course deleted successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
@@ -144,13 +184,24 @@ const deleteCourse = async (req, res) => {
 const updateCourse = async (req, res) => {
   try {
     const courseId = req.params.id;
-    const { title, description, level, language, duration, price, author, category } = req.body;
+    const {
+      title,
+      description,
+      level,
+      language,
+      duration,
+      price,
+      author,
+      category,
+    } = req.body;
     const thumbnailLocalPath = req.file?.path;
 
     const course = await Course.findByPk(courseId);
 
     if (!course) {
-      return res.status(404).json(new ApiResponse(404, null, "Course not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Course not found"));
     }
 
     let thumbnailUrl = course.thumbnailUrl;
@@ -171,7 +222,9 @@ const updateCourse = async (req, res) => {
       thumbnailUrl,
     });
 
-    return res.status(200).json(new ApiResponse(200, course, "Course updated successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, course, "Course updated successfully"));
   } catch (error) {
     throw new ApiError(500, error.message);
   }
@@ -184,5 +237,5 @@ module.exports = {
   getAllCoursesBasedOnQuery,
   getAllCoursesTitle,
   deleteCourse,
-  updateCourse
+  updateCourse,
 };

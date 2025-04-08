@@ -17,8 +17,8 @@ const startServer = async () => {
     await connectDB(); // check DB connection
     console.log("Connected to DB");
     //await sequelize.sync({alter:true});
-    await User.sync({ force: true }); // Sync User model
-    await Course.sync({ force: true }); // Sync Course model
+    await User.sync({ alter: true }); // Sync User model
+    await Course.sync({ alter: true }); // Sync Course model
     console.log("User and Course models synced successfully");
   } catch (error) {
     console.error("Failed to start server:", error);

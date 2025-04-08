@@ -15,7 +15,7 @@ module.exports.authUser = async (req, _, next) => {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    // 🔍 Find user by ID using Sequelize
+    
     const user = await User.findByPk(decodedToken?.id);
 
     if (!user) {
