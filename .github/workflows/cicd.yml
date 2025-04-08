@@ -30,10 +30,10 @@ jobs:
         run: |
           docker run -d \
           --name assignment-server-container \
-          --add-host=host.docker.internal:host-gateway \
+          --network backend-network \
           -p 4000:4000 \
           -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
           -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
           -e DB_NAME=${{ secrets.DB_NAME }} \
-          -e DB_HOST=host.docker.internal \
+          -e DB_HOST=mysql-db \
           riteshhedau/assignment-server:latest
