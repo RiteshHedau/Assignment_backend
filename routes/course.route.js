@@ -65,8 +65,6 @@ router.delete(
 
 router.put(
   "/update-course/:id",
-  authMiddleware.authUser,
-  isAdminMiddleware.isAdmin,
   [
     body("title").notEmpty().withMessage("Title is required"),
     body("description").notEmpty().withMessage("Description is required"),
@@ -74,6 +72,8 @@ router.put(
     body("price").notEmpty().withMessage("Price is required"),
     body("level").notEmpty().withMessage("Level is required"),
   ],
+  authMiddleware.authUser,
+  isAdminMiddleware.isAdmin,
   upload.single("thumbnailUrl"),
   courseController.updateCourse
 );
@@ -84,6 +84,13 @@ router.post(
   isAdminMiddleware.isAdmin,
   upload.single("file"), 
   courseController.createCoursesThroughCsvFile
+);
+
+router.get(
+  "/get-all-courses-edit-delete",
+  authMiddleware.authUser,
+  isAdminMiddleware.isAdmin,
+  courseController.getAllCoursesForEditAndDelete
 );
 
 module.exports = router;
