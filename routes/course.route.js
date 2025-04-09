@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
-const {courseController} = require("./../controller/course.controller");
+const courseController = require("./../controller/course.controller");
 const authMiddleware = require("./../middleware/auth.middleware");
-const {upload} = require("./../middleware/multer.middleware");
+const upload = require("./../middleware/multer.middleware");
 const isAdminMiddleware = require("./../middleware/isAdmin.middleware");
 
 router.post(
