@@ -3,6 +3,8 @@ const ApiError = require("../utils/ApiError");
 const ApiResponse = require("./../utils/ApiResponse");
 const uploadOnCloudinary = require("../utils/cloudinary.js");
 const { Op } = require("sequelize");
+const csv = require("csv-parser");
+const fs = require("fs");
 
 const createCourse = async (req, res) => {
   try {
@@ -120,23 +122,10 @@ const getAllCoursesBasedOnQuery = async (req, res) => {
 
 const createAllCourses = async (req, res) => {
   try {
-    const coursesData = JSON.parse(req.body.courses);
-    const thumbnailFiles = req.files;
-
-    const uploadPromises = thumbnailFiles.map((file) =>
-      uploadOnCloudinary(file.path)
-    );
-    const uploadedUrls = await Promise.all(uploadPromises);
-
-    const courses = await Promise.all(
-      coursesData.map(async (course, index) => {
-        return await Course.create({
-          ...course,
-          thumbnailUrl: uploadedUrls[index]?.url || "",
-        });
-      })
-    );
-
+    const coursesData = req.body;
+    const courses = await Course.bulkCreate(coursesData, {
+      ignoreDuplicates: true,
+    });
     return res
       .status(201)
       .json(new ApiResponse(201, courses, "Courses created successfully"));
@@ -230,6 +219,64 @@ const updateCourse = async (req, res) => {
   }
 };
 
+const createCoursesThroughCsvFile = async (req, res) => {
+  try {
+    const csvFilePath = req.file?.path;
+
+    if (!csvFilePath) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "CSV file is required"));
+    }
+
+    const coursesData = [];
+
+    // Read and parse the CSV file
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(csvFilePath)
+        .pipe(csv())
+        .on("data", (row) => {
+          coursesData.push(row);
+        })
+        .on("end", resolve)
+        .on("error", reject);
+    });
+
+    try {
+      // Handle thumbnail upload for each course
+      await Promise.all(
+        coursesData.map(async (course) => {
+          if (course.thumbnailLocalPath) {
+            const uploadResponse = await uploadOnCloudinary(
+              course.thumbnailLocalPath
+            );
+            course.thumbnailUrl = uploadResponse;
+            delete course.thumbnailLocalPath; // Remove local path after upload
+          }
+        })
+      );
+
+      const courses = await Course.bulkCreate(coursesData, {
+        ignoreDuplicates: true,
+      });
+
+      return res
+        .status(201)
+        .json(new ApiResponse(201, courses, "Courses created successfully"));
+    } catch (error) {
+      console.error("Error during bulk creation:", error.message);
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, "Failed to create courses"));
+    }
+  } catch (error) {
+    console.error("Error processing CSV file:", error.message);
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to process CSV file"));
+  }
+};
+
 module.exports = {
   createCourse,
   getAllCourses,
@@ -238,4 +285,5 @@ module.exports = {
   getAllCoursesTitle,
   deleteCourse,
   updateCourse,
+  createCoursesThroughCsvFile,
 };

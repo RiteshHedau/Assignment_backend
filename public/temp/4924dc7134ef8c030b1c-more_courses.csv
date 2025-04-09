@@ -1,0 +1,6 @@
+title,description,level,language,duration,price,author,category,type,thumbnailUrl
+Machine Learning A-Z,Learn Machine Learning algorithms with practical implementation in Python and R.,Intermediate,English,45 hours,179.99,Alex Harrison,Data Science,Online Course,https://example.com/images/ml-course.jpg
+The Complete Node.js Developer Course,"Build powerful backend apps using Node.js, Express, and MongoDB.",Intermediate,English,35 hours,119.99,Andrew Mead,Web Development,Online Course,https://example.com/images/nodejs-course.jpg
+Mastering Angular,Deep dive into Angular framework with practical projects.,Advanced,English,30 hours,139.99,Sarah Connor,Web Development,Online Course,https://example.com/images/angular-course.jpg
+SQL for Data Analysis,Learn how to use SQL to perform powerful data analysis.,Beginner,English,18 hours,79.99,David Kim,Data Science,Online Course,https://example.com/images/sql-course.jpg
+Kotlin for Android Development,Build Android apps from scratch using Kotlin programming language.,Intermediate,English,28 hours,109.99,Laura West,Mobile Development,Online Course,https://example.com/images/kotlin-course.jpg

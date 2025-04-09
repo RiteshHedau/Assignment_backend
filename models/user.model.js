@@ -34,11 +34,12 @@ const User = sequelize.define(
     }
   },
   {
-    tableName: 'users',
     timestamps: true,
+    tableName: 'users',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   },
+  
 );
 
 User.beforeCreate(async (user) => {
@@ -83,4 +84,4 @@ User.prototype.generateRefreshToken = function () {
   );
 };
 
-module.exports=User;
+module.exports= User;

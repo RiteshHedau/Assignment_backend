@@ -1,0 +1,6 @@
+title,description,level,language,duration,price,author,category,type,thumbnailUrl
+Java Full Stack Bootcamp,Comprehensive course covering frontend and backend using Java and Spring Boot.,Intermediate,English,40 hours,199.99,John Doe,Programming,Online Course,https://example.com/images/java-course.jpg
+Beginner's Guide to Python,Learn Python programming from scratch with hands-on examples.,Beginner,English,20 hours,99.99,Jane Smith,Programming,Online Course,https://example.com/images/python-course.jpg
+Advanced React and Redux,Master advanced concepts in React including Redux and hooks.,Advanced,English,25 hours,149.99,Mike Johnson,Web Development,Online Course,https://example.com/images/react-course.jpg
+UI/UX Design Fundamentals,Understand core principles of UI and UX design with practical projects.,Beginner,English,15 hours,89.99,Emily Brown,Design,Online Course,https://example.com/images/uiux-course.jpg
+Data Structures in C++,Learn essential data structures and algorithms using C++.,Intermediate,English,30 hours,129.99,Chris Lee,Programming,Online Course,https://example.com/images/cpp-course.jpg

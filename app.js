@@ -2,17 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const User = require('./models/user.model')
 const userRoutes= require('./routes/user.route')
 const courseRoutes= require('./routes/course.route')
 
 const app = express();
 const corsOptions = {
-    origin: '*', // Replace with your frontend URL
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: '*', 
+    credentials: true, 
 };
 
-User.sync({force:true})
 
 
 app.use(cors(corsOptions));
