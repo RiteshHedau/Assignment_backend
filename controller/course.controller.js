@@ -277,6 +277,18 @@ const createCoursesThroughCsvFile = async (req, res) => {
   }
 };
 
+const getAllCoursesForEditAndDelete = async (req, res) => {
+  try {
+    const courses = await Course.findAll();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, courses, "Courses fetched successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message);
+  }
+}
+
 module.exports = {
   createCourse,
   getAllCourses,
@@ -286,4 +298,5 @@ module.exports = {
   deleteCourse,
   updateCourse,
   createCoursesThroughCsvFile,
+  getAllCoursesForEditAndDelete
 };

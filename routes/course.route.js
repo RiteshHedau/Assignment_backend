@@ -1,9 +1,9 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
-const courseController = require("./../controller/course.controller");
-const authMiddleware = require("./../middleware/auth.middleware");
-const upload = require("./../middleware/multer.middleware");
-const isAdminMiddleware = require("./../middleware/isAdmin.middleware");
+const {courseController} = require("./../controller/course.controller");
+const {authMiddleware} = require("./../middleware/auth.middleware");
+const {upload} = require("./../middleware/multer.middleware");
+const {isAdminMiddleware} = require("./../middleware/isAdmin.middleware");
 
 router.post(
   "/create-course",
@@ -22,8 +22,6 @@ router.post(
 
 router.post(
   "/create-all-courses",
-  authMiddleware.authUser,
-  isAdminMiddleware.isAdmin,
   [
     body("courses").isArray().withMessage("Courses must be an array"),
     body("courses.*.title").notEmpty().withMessage("Title is required"),
@@ -34,6 +32,8 @@ router.post(
     body("courses.*.price").notEmpty().withMessage("Price is required"),
     body("courses.*.level").notEmpty().withMessage("Level is required"),
   ],
+  authMiddleware.authUser,
+  isAdminMiddleware.isAdmin,
   upload.array("thumbnailUrl"),
   courseController.createAllCourses
 );
