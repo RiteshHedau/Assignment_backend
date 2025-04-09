@@ -15,7 +15,6 @@ const startServer = async () => {
       console.log("Server is running on port", PORT);
     });
     await connectDB(); 
-    console.log("Connected to DB");
     
     await sequelize.sync({alter:true});
     //await Course.sync({ alter: true }); // Sync Course model
