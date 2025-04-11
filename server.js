@@ -16,7 +16,7 @@ const startServer = async () => {
     });
     await connectDB(); 
     
-    await sequelize.sync({alter:true});
+    await sequelize.sync({alter:false});
     //await Course.sync({ alter: true }); // Sync Course model
     //await User.sync({ alter: true }); // Sync User model
     console.log("User and Course models synced successfully");

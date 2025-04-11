@@ -371,6 +371,23 @@ const getUser=async(req,res)=>{
       throw new ApiError(500, error?.message || "Something went wrong while fetching the user");
   }
 }
+const deleteUser=async(req,res)=>{
+  try {
+    const userId = req.params.id; 
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json(new ApiResponse(404, {}, "User not found"));
+    }
+
+    await user.destroy();
+
+    return res.status(200).json(new ApiResponse(200, {}, "User deleted successfully"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Something went wrong while deleting the user");
+  }
+}
 
 module.exports = {
   registerUser,
@@ -380,5 +397,6 @@ module.exports = {
   updateUser,
   forgetPassword,
   getAllUsers,
-  getUser
+  getUser,
+  deleteUser
 };

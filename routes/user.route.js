@@ -35,4 +35,6 @@ router.get("/get-all-users",authMiddleware.authUser,userController.getAllUsers)
 
 router.get("/get-logged-user",authMiddleware.authUser,userController.getUser)
 
+router.delete("/delete-user/:id",authMiddleware.authUser,isAdminMiddleware.isAdmin,userController.deleteUser)
+
 module.exports=router;
