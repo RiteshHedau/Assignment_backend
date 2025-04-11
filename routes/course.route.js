@@ -93,4 +93,6 @@ router.get(
   courseController.getAllCoursesForEditAndDelete
 );
 
+router.get('/get-course/:id', authMiddleware.authUser, courseController.getCourseById);
+
 module.exports = router;

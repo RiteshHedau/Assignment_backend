@@ -40,6 +40,19 @@ const createCourse = async (req, res) => {
       thumbnailUrl,
     });
 
+    // Emit socket event with more detailed information
+    const io = req.app.get("io");
+    io.emit("newCourse", {
+      message: `New course "${newCourse.title}" has been added!`,
+      course: {
+        id: newCourse.id,
+        title: newCourse.title,
+        description: newCourse.description,
+        level: newCourse.level,
+        thumbnailUrl: newCourse.thumbnailUrl,
+      },
+    });
+
     return res
       .status(201)
       .json(new ApiResponse(201, { newCourse }, "Course created successfully"));
@@ -287,6 +300,25 @@ const getAllCoursesForEditAndDelete = async (req, res) => {
   } catch (error) {
     throw new ApiError(500, error.message);
   }
+};
+
+const getCourseById=async(req,res)=>{
+  try {
+    const courseId = req.params.id;
+    const course = await Course.findByPk(courseId);
+
+    if (!course) {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Course not found"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, course, "Course fetched successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message);
+  }
 }
 
 module.exports = {
@@ -298,5 +330,6 @@ module.exports = {
   deleteCourse,
   updateCourse,
   createCoursesThroughCsvFile,
-  getAllCoursesForEditAndDelete
+  getAllCoursesForEditAndDelete,
+  getCourseById
 };
