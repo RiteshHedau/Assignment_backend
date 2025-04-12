@@ -8,13 +8,13 @@ const { connectDB, sequelize } = require("./dbConfig/dbConnection");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: [process.env.CLIENT_URL],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: process.env.CLIENT_URL,
+   // methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    //allowedHeaders: ["Content-Type", "Authorization"],
   },
-  pingTimeout: 60000,
-  pingInterval: 25000,
+ // pingTimeout: 60000,
+ // pingInterval: 25000,
 });
 
 // Add socket.io connection handling
@@ -22,10 +22,10 @@ io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
   // Authenticate socket connection
-  const token = socket.handshake.auth.token;
-  if (token) {
-    console.log("Client authenticated:", socket.id);
-  }
+  // const token = socket.handshake.auth.token;
+  // if (token) {
+  //   console.log("Client authenticated:", socket.id);
+  // }
 
   socket.on("disconnect", (reason) => {
     console.log("Client disconnected:", socket.id, "Reason:", reason);

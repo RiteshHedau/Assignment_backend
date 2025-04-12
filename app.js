@@ -7,7 +7,7 @@ const courseRoutes = require("./routes/course.route");
 
 const app = express();
 const corsOptions = {
-  origin: "*" || process.env.CLIENT_URL, // Replace with your frontend URL
+  origin: process.env.CLIENT_URL, // Replace with your frontend URL
   credentials: true,
   //methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   // allowedHeaders: ["Content-Type", "Authorization"],
