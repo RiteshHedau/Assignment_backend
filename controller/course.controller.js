@@ -47,9 +47,9 @@ const createCourse = async (req, res) => {
       course: {
         id: newCourse.id,
         title: newCourse.title,
-        description: newCourse.description,
-        level: newCourse.level,
-        thumbnailUrl: newCourse.thumbnailUrl,
+        // description: newCourse.description,
+        // level: newCourse.level,
+        // thumbnailUrl: newCourse.thumbnailUrl,
       },
     });
 
